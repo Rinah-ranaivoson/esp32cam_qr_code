@@ -1,18 +1,17 @@
-Voici un fichier README pour votre code, expliquant son fonctionnement et comment l'utiliser :
-
----
 
 # ESP32Cam QR Code Decoder
 
-This project allows you to capture video from an ESP32Cam and decode QR codes in real-time. The ESP32Cam stream is fetched via HTTP, and any QR codes present in the stream are detected and decoded using the `pyzbar` library. The decoded content is displayed on the video feed, along with a green rectangle around the detected QR code.
+This project allows you to capture a video stream from an ESP32Cam module and decode QR codes in real-time. The ESP32Cam is set up to serve images at different resolutions (low, medium, high), which can be accessed via HTTP endpoints. The Python script fetches these images and uses the `pyzbar` library to decode any QR codes found in the stream.
 
 ## Requirements
 
-Before running the script, you need to have the following libraries installed:
+### Software Requirements
 
-1. **OpenCV** for image processing and displaying the video feed.
-2. **NumPy** for handling image arrays.
-3. **pyzbar** for decoding QR codes from the image frames.
+Before running the Python script, ensure you have the following libraries installed:
+
+1. **OpenCV**: For image processing and displaying the video feed.
+2. **NumPy**: For handling image arrays.
+3. **pyzbar**: For decoding QR codes from image frames.
 
 You can install the required dependencies using `pip`:
 
@@ -20,60 +19,69 @@ You can install the required dependencies using `pip`:
 pip install opencv-python numpy pyzbar
 ```
 
+### Hardware Requirements
+
+1. **ESP32Cam**: The ESP32Cam module must be set up and running a simple web server to serve images at different resolutions (low, medium, high).
+2. **Wi-Fi Network**: Both the ESP32Cam and the device running the Python script must be on the same Wi-Fi network.
+
 ## Setup
 
-### ESP32Cam Stream URL
+### Step 1: Configure the ESP32Cam
 
-To use this script with your own ESP32Cam, you need to replace the stream URL with the URL provided by your ESP32Cam. 
+Make sure your ESP32Cam is configured correctly to serve images at different resolutions. The ESP32Cam should be running the provided code (already in your repository), which sets up a web server to serve images at the following endpoints:
 
-Typically, the ESP32Cam might provide a stream URL like this:
+- **Low resolution**: `/cam-lo.jpg`
+- **Medium resolution**: `/cam-mid.jpg`
+- **High resolution**: `/cam-hi.jpg`
+
+After uploading the code to the ESP32Cam and connecting it to your Wi-Fi network, the ESP32Cam will print its IP address to the Serial Monitor. For example:
+
 ```
-http://<ESP32_IP_ADDRESS>/cam-hi.jpg
+http://192.168.1.100
+  /cam-lo.jpg
+  /cam-hi.jpg
+  /cam-mid.jpg
 ```
-Where `<ESP32_IP_ADDRESS>` is the IP address of your ESP32Cam device.
 
-Make sure that your ESP32Cam is connected to the same network as the machine running this script.
+### Step 2: Update and Run the Python QR Code Decoder
 
-### Running the Script
-
-1. **Set the ESP32Cam URL**:
-   In the script, locate the following line and replace the URL with your ESP32Cam stream URL:
+1. **Update the ESP32Cam Stream URL**:
+   In the Python script, replace the URL with the IP address of your ESP32Cam. For example:
    ```python
-   url = 'http://192.168.137.244/cam-hi.jpg'
+   url = 'http://192.168.1.100/cam-hi.jpg'
    ```
 
-2. **Run the Script**:
+2. **Run the Python Script**:
    Execute the script in your terminal or Python environment:
    ```bash
    python esp32cam_qr_decoder.py
    ```
 
 3. **QR Code Detection**:
-   - The video feed will be displayed in a window called **"ESP32Cam QR Code Decoder"**.
-   - If any QR code is detected in the image frame, it will display a green rectangle around the QR code and the decoded content will be shown next to the QR code.
-   - The decoded QR code content will also be printed to the terminal.
+   The video stream will be displayed in a window called **"ESP32Cam QR Code Decoder"**. If any QR code is detected in the image frame, a green rectangle will be drawn around it, and the decoded content will be shown next to the code. The decoded QR code content will also be printed in the terminal.
 
 4. **Exit the Application**:
    - To stop the script and close the video window, press the **`q`** key.
 
-## Notes
+## Available Endpoints
 
-- **ESP32Cam Stream**: This script assumes the ESP32Cam provides a static JPEG image at the given URL. If you are using a different type of video stream (e.g., MJPEG), the method to retrieve and decode the stream may need to be adjusted.
-- **Latency**: If you experience delays in detecting the QR codes, it may be due to the time taken to fetch and decode each image. Using a faster camera stream or optimizing the stream quality can help reduce latency.
-- **Error Handling**: Ensure that the ESP32Cam stream is accessible over your network. If the connection fails, the script will not be able to retrieve frames.
+The following HTTP endpoints are available to capture images from the ESP32Cam:
+
+- **Low Resolution**: `/cam-lo.jpg`
+- **Medium Resolution**: `/cam-mid.jpg`
+- **High Resolution**: `/cam-hi.jpg`
+
+You can change the resolution by modifying the Python script to request images from different endpoints.
 
 ## Example Output
 
-- QR code detected:
+- **QR Code detected**:
   ```
   1234567890abcdef
   ```
-- Image display: The video feed will show a rectangle around any detected QR code and display the decoded text near the code.
+- **Image display**: The video feed will show a rectangle around any detected QR code, and the decoded text will be displayed next to the QR code.
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
----
-
-Feel free to adjust the content based on any specific requirements or changes you make to the code.
